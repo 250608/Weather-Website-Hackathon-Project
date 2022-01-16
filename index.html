@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Current Weather</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,900" rel="stylesheet"> 
+  <link href="WeatherSheet.css" rel="stylesheet"> 
+  <script>
+  const key = 'ea4eb2b47340fb4063cfd124fbbaf324';
+if(key=='') document.getElementById('temp').innerHTML = ('Remember to add your api key!');
+var lat;
+var longer;
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  var lat = position.coords.latitude; 
+  var longer = position.coords.longitude;
+
+  weatherBallon(lat, longer);
+}
+
+function weatherBallon( lat, longer ) {
+	/*https://api.openweathermap.org/data/2.5/weather?lat=40.8977408&lon=-74.2326272&appid=ea4eb2b47340fb4063cfd124fbbaf324
+	
+
+	fetch('https://api.openweathermap.org/data/2.5/weather?lat=40.8977408&lon=-74.2326272&appid=ea4eb2b47340fb4063cfd124fbbaf324')  */
+	fetch('https://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + longer + '&appid=ea4eb2b47340fb4063cfd124fbbaf324')  
+	.then(function(resp) { return resp.json() }) // Convert data to json
+	.then(function(data) {
+		drawWeather(data);
+	})
+	.catch(function() {
+		// catch any errors
+	});
+}
+function drawWeather( d ) {
+  var celcius = Math.round(parseFloat(d.main.temp)-273.15);
+	var fahrenheit = Math.round(((parseFloat(d.main.temp)-273.15)*1.8)+32);
+  var description = d.weather[0].description; 
+	chooseclothes(fahrenheit);
+	document.getElementById('description').innerHTML = description;
+	document.getElementById('temp').innerHTML = fahrenheit + '&deg;';
+	document.getElementById('location').innerHTML = d.name;
+  
+  if( description.indexOf('rain') > 0 ) {
+  	document.body.className = 'rainy';
+	  
+  } else if( description.indexOf('cloud') > 0 ) {
+  	document.body.className = 'cloudy';
+  } else if( description.indexOf('sunny') > 0 ) {
+  	document.body.className = 'sunny';
+  } else {
+  	document.body.className = 'clear';
+  }
+}
+function chooseclothes(clca) {
+if (clca >= 75) {
+    document.getElementById("clothimg").src = "https://primedia.primark.com/s/primark/210094637_ms?locale=en-*,sl-*,*&$product-thumbnail$";
+  } 
+  else if (75 > clca && clca >= 65){
+    document.getElementById("clothimg").src = "https://cdn.hiconsumption.com/wp-content/uploads/2021/04/Everlane-Organic-Cotton-Long-Sleeve-Pocket-Tee.jpg";
+  }
+  else if (65 > clca && clca >= 45){
+    document.getElementById("clothimg").src = "https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F4f%2Fa6%2F4fa6abb8fe0305fd4749b14ecbf036efe05d4720.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bladies_cardigansjumpers_jumpers%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/zoom]&zoom=zoom";
+  }
+  else if (45 > clca && clca >= 30){
+    document.getElementById("clothimg").src = "https://m.media-amazon.com/images/I/61z8EVo52YL._AC_SL1500_.jpg";
+  }
+  else if (30 > clca && clca >= -40){
+    document.getElementById("clothimg").src = "https://di2ponv0v5otw.cloudfront.net/posts/2019/04/15/5cb4ab85ffc2d4b96a119728/m_5cb4abe68557af0d543dd72f.jpg";
+  
+  }
+}
+window.onload = function() {
+	getLocation( 6167865 );
+}
+</script>
+</head>
+<body>
+	<div class="bg"></div>
+	<div>
+    <div id="description"></div>
+    <h1 id="temp"></h1>
+    <div id="location"></div>
+	<img id="clothimg" src="https://primedia.primark.com/s/primark/210094637_ms?locale=en-*,sl-*,*&$product-thumbnail$" width="300" height="300">
+	<p> Recommended clothing</p>
+  </div>
+</body>
+</html>
